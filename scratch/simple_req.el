@@ -1,5 +1,6 @@
 (require 'request)
-
+(defun aaa ()
+  (interactive)
 (setq api_key (getenv "EVG_API_KEY"))
 (setq api_user (getenv "EVG_API_USER"))
 (if (or
@@ -21,13 +22,16 @@
                 (lambda (&key data &allow-other-keys)
                   (progn
                     (setq patch_id (assoc-default 'patch_id (svref data 0)) ))))
+      (message "Patch id %s" patch_id)
+
       (request
         (concatenate 'string "https://evergreen.mongodb.com/rest/v2/patches/" patch_id)
         :type "PATCH"
-        :data (json-encode '(("priority" . 30) ))
+        :data (json-encode '(("priority" . 10) ))
         :headers header
         :parser 'json-read
         )
       )
     )
   )
+)
