@@ -2,6 +2,8 @@
 ;;  "Complete a foo: " '((aa) (bb))
 ;;  nil t "")
 
+(defun mdb/evg-list-patches ()
+  (interactive)
 (setq api_key (getenv "EVG_API_KEY"))
 (setq api_user (getenv "EVG_API_USER"))
 (setq patch_id "")
@@ -56,3 +58,4 @@
       )
     )
     )
+)
