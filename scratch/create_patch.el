@@ -7,9 +7,8 @@
   (setq tasks_for_command tasks_to_run)
   (setq build_variants (mdb/evg-get-matching-build-variants-for-task (pop tasks_to_run)))
   (loop for task_to_run in tasks_to_run do
-        (setq build_variants (cl-intersection build_variants (mdb/evg-get-matching-build-variants-for-task task_to_run)))
+        (setq build_variants (cl-union build_variants (mdb/evg-get-matching-build-variants-for-task task_to_run)))
         )
-  (message "%s" build_variants)
   (if (eq build_variants nil)
       (progn
         (message "The selected tasks do not share build variants")
