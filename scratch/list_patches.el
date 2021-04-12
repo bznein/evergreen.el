@@ -1,6 +1,3 @@
-;; (completing-read
-;;  "Complete a foo: " '((aa) (bb))
-;;  nil t "")
 
 (defun mdb/evg-list-patches ()
   (interactive)
@@ -31,11 +28,13 @@
                                   (assoc-default 'description e))
                             (setq number
                                   (assoc-default 'patch_number e))
+                            (setq projectq
+                                  (assoc-default 'project_id e))
                             (setq choices
                                   (append choices
                                           (list
                                            (cons
-                                            (concatenate 'string description " - "  (number-to-string number))
+                                            (concatenate 'string project " - " (number-to-string number) " - "  description " - "  status)
                                             patch_id)
                                            )
                                           )
