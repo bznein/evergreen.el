@@ -8,7 +8,18 @@
   )
 
 (defun mdb/evg-get-task ()
-  (completing-read "Task " (mdb/evg-parse-tasks)  nil t "")
+  (setq choices ())
+  (defun fill-choices (candidate)
+    (loop for cand in (helm-marked-candidates)
+          do
+          (push cand choices)
+          )
+    )
+  (helm :sources '(((name . "Tasks")
+                    (candidates . tasks)
+                    (action . (("open" . fill-choices)))
+                    )))
+  choices
   )
 
 (defun mdb/evg-parse-tasks ()
