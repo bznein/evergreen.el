@@ -35,7 +35,20 @@
   tasks
   )
 
-
+(defun mdb/evg-validate-file ()
+  (interactive)
+  ;; Get the current buffer filename
+  (if
+      (not
+       (or
+         (s-suffix? ".yaml" buffer-file-name)
+         (s-suffix? ".yml" buffer-file-name)
+        )
+       )
+      (message  (shell-command-to-string(concatenate 'string "evergreen validate --path " (read-file-name "Evergreen file"))))
+    (message (shell-command-to-string(concatenate 'string "evergreen validate --path " buffer-file-name )))
+    )
+  )
 
 (defun mdb/evg-parse-build-variants ()
   ;; build build_variants name lists
