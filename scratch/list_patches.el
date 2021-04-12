@@ -4,14 +4,10 @@
 
 (defun mdb/evg-list-patches ()
   (interactive)
-(setq api_key (getenv "EVG_API_KEY"))
-(setq api_user (getenv "EVG_API_USER"))
-(setq patch_id "")
-(if (or
-     (= (length api_key) 0)
-     (= (length api_user) 0)
-     )
-    (message "Please make sure to set the env variables $EVG_API_KEY and $EVG_API_USER")
+  (setq patch_id "")
+  (mdb/set-credentials)
+  (setq api_key (getenv "EVG_API_KEY"))
+  (setq api_user (getenv "EVG_API_USER"))
   (progn
     (setq header (list
                   (cons "Api-User" api_user)
@@ -57,5 +53,4 @@
                 )
       )
     )
-    )
-)
+  )
