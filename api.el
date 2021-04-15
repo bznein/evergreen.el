@@ -89,3 +89,42 @@
     :success (cl-function (lambda (&key data &allow-other-keys) (funcall handler_call data)))
     )
   )
+
+(defun mdb/evg-get-all-projects (handler)
+  (interactive)
+  (mdb/set-credentials)
+  (setq api_key (getenv "EVG_API_KEY"))
+  (setq api_user (getenv "EVG_API_USER"))
+  (setq header (list
+                (cons "Api-User" api_user)
+                (cons "Api-Key" api_key)
+                )
+        )
+  (setq handler_call handler)
+  (request
+    "https://evergreen.mongodb.com/rest/v2/projects?limit=10000"
+    :headers header
+    :parser 'json-read
+    :success (cl-function (lambda (&key data &allow-other-keys) (funcall handler_call data)))
+    )
+  )
+
+(defun mdb/evg-get-project-versions (id handler)
+  (interactive)
+  (mdb/set-credentials)
+  (setq api_key (getenv "EVG_API_KEY"))
+  (setq api_user (getenv "EVG_API_USER"))
+  (setq header (list
+                (cons "Api-User" api_user)
+                (cons "Api-Key" api_key)
+                )
+        )
+  (setq handler_call handler)
+  (request
+    ;; TODO parametrize limit
+    (concat "https://evergreen.mongodb.com/rest/v2/projects/" id "/versions?limit=10")
+    :headers header
+    :parser 'json-read
+    :success (cl-function (lambda (&key data &allow-other-keys) (funcall handler_call data)))
+    )
+  )

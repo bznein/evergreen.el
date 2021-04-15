@@ -340,5 +340,4 @@
                            )
   )
 
-
 (mdb/evg-show-all-patches)
