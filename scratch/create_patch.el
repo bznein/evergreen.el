@@ -14,6 +14,19 @@
         (message "The selected tasks do not share build variants")
         )
     (progn
+      (setq build_variants_for_command ())
+      (setq candidate_variants (delete-dups build_variants))
+      (defun fill-choices (candidate)
+        (loop for cand in (helm-marked-candidates)
+              do
+              (push cand build_variants_for_command)
+              )
+        )
+      (helm :sources '(((name . "Build Variants")
+                        (candidates . candidate_variants)
+                        (action . (("open" . fill-choices)))
+                        )))
+      choices
       (setq description_command "")
       (setq description (read-string "Description: "))
       (if
@@ -26,7 +39,7 @@
                     "evergreen patch"
                     " -p " (replace-regexp-in-string "\n\\'" "" (mdb/get-current-repo))
                     " -t " (s-join " -t " tasks_for_command)
-                    " -v " (s-join " -v " build_variants)
+                    " -v " (s-join " -v " build_variants_for_command)
                     description_command
                     " -f -y -u -browse"
                     )
