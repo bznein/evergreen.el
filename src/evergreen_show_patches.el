@@ -41,7 +41,7 @@
                                           "Evergreen patch: " choices nil t "")
                                   )
                             (setq id (assoc-default choice choices))
-                            (shell-command (message (concat "open https://spruce.mongodb.com/version/" id )))
+                            (browse-url (concat "https://spruce.mongodb.com/version/" id )))
                             )
                           )
                         )
