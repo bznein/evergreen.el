@@ -81,6 +81,14 @@
 
 (defun mdb/get-text-file (url handler)
   (interactive)
+  (mdb/set-credentials)
+  (setq api_key (getenv "EVG_API_KEY"))
+  (setq api_user (getenv "EVG_API_USER"))
+  (setq header (list
+                (cons "Api-User" api_user)
+                (cons "Api-Key" api_key)
+                )
+        )
   (setq handler_call handler)
   (request
     url

@@ -57,20 +57,13 @@
   "Major mode for evg-file page")
 
 
-(switch-to-buffer (get-buffer-create "EVG"))
-(mdb-evg-mode)
-(make-local-variable 'start)
-(make-local-variable 'limit)
-(setq start 0)
-(setq limit 10)
-
 (cl-defstruct evg-patch patch_id description patch_number status author create-time start-time finish-time variants_tasks version)
 
 (defun mdb/evg-next-patches ()
   (interactive)
   (setq start (+ start 10))
   (setq limit (+ start 10))
-  (mdb/evg-show-all-patches)
+  (mdb/evg-show-all-patches 't)
   )
 
 (defun mdb/evg-prev-patches ()
@@ -80,7 +73,7 @@
       (setq start 0)
     )
   (setq limit (+ start 10))
-  (mdb/evg-show-all-patches)
+  (mdb/evg-show-all-patches 't)
   )
 
 (defun mdb/evg-open-patch-at-point ()
@@ -181,6 +174,64 @@
     )
   )
 
+(defun mdb/evg-show-diff (raw_url file_name)
+  (interactive)
+  (setq buffer_name file_name)
+  (switch-to-buffer (get-buffer-create buffer_name))
+
+  ;;TODO replace with a real one
+  (mdb-evg-patch-mode)
+  (with-current-buffer buffer_name
+    (setq name file_name)
+    (mdb/get-text-file
+     raw_url
+     (lambda (file)
+       (setq found nil)
+       (setq splitted_string (split-string file "\n"))
+       (loop for line being the elements of splitted_string do
+             (if found
+                 (progn
+                   (if (string-prefix-p "diff --git a/" line)
+                       (setq found nil)
+                     (progn
+                       (if (or
+                            (string-prefix-p "+++" line)
+                            (string-prefix-p "---" line)
+                            )
+                           (insert (propertize line 'font-lock-face '(:weight bold)))
+                         (if (string-prefix-p "+ " line)
+                             (progn
+                               (message "Starts with +")
+                               (insert (propertize line 'font-lock-face '(:foreground "green")))
+                               )
+                           (if (string-prefix-p "- " line)
+                               (progn
+                                 (message "Starts with - ")
+                                 (insert (propertize line 'font-lock-face '(:foreground "red") ))
+                                 )
+                             (insert line)
+                             )
+                           )
+                         )
+                       (newline)
+                       )
+                     )
+                   )
+               (if (string-prefix-p (concat "diff --git a/" name) line)
+                   (progn
+                     (insert line)
+                     (newline)
+                     (setq found 't)
+                     )
+                 )
+               )
+             )
+       )
+     )
+    )
+  )
+
+
 (defun mdb/evg-show-patch (patch)
   (setq buffer_name (concat "Patch " (alist-get 'patch_id patch)))
   (switch-to-buffer (get-buffer-create buffer_name))
@@ -192,6 +243,49 @@
     (newline)
     (newline)
     (mdb/evg-patch-show-tasks patch buffer_name)
+    (newline)
+
+    (loop for code_change across (alist-get 'module_code_changes  patch) do
+          (newline)
+           (insert
+            (concat "Changes for branch " (alist-get 'branch_name code_change))
+            )
+           (newline)
+           (setq html_url (alist-get 'html_link code_change))
+           (setq raw_url (alist-get 'raw_link code_change))
+           (insert-button "HTML" 'action (lambda (_) (browse-url html_url)))
+           (newline)
+           (insert-button "RAW" 'action (lambda (_) (browse-url raw_url)))
+           (newline)
+           (newline)
+           (insert "Files changed:")
+           (setq file_top_point (point))
+           (newline)
+           (newline)
+           (setq tot_add 0)
+           (setq tot_del 0)
+           (loop for file across (alist-get 'file_diffs code_change) do
+                 (setq add (alist-get 'additions file))
+                 (setq del (alist-get 'deletions file))
+                 (newline)
+                 (setq raw_diff raw_url)
+                 (insert-button (alist-get 'file_name file)
+                                'name (alist-get 'file_name file)
+                                'action (lambda (b)
+                                          (mdb/evg-show-diff raw_diff (button-get b 'name))
+                                          )
+                                )
+                 (insert
+                  (propertize (concat "\t+" (number-to-string add)) 'font-lock-face '(:foreground "green") ))
+                 (insert
+                  (propertize (concat " -" (number-to-string del)) 'font-lock-face '(:foreground "red") ))
+                 (setq tot_add (+ add tot_add))
+                 (setq tot_del (+ del tot_del))
+                 )
+           (goto-char file_top_point)
+           (insert (propertize (concat "\t+" (number-to-string tot_add)) 'font-lock-face '(:foreground "green") ))
+           (insert (propertize (concat " -" (number-to-string tot_del)) 'font-lock-face '(:foreground "red") ))
+           )
     (read-only-mode)
     )
   )
@@ -304,8 +398,16 @@
   )
 
 
-(defun mdb/evg-show-all-patches ()
+(defun mdb/evg-show-all-patches (&optional skip_val)
   (interactive)
+  (switch-to-buffer (get-buffer-create "EVG"))
+  (mdb-evg-mode)
+  (if (not skip_val)
+      (progn
+        (setq start 0)
+        (setq limit 10)
+        )
+    )
   (mdb/evg-get-all-patches limit (cl-function
                             (lambda (&key data &allow-other-keys)
                               (with-current-buffer "EVG"
@@ -339,5 +441,3 @@
                             )
                            )
   )
-
-(mdb/evg-show-all-patches)
