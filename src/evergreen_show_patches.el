@@ -7,46 +7,46 @@
 (defun mdb/evg-list-patches ()
   (interactive)
   (mdb/evg-get-all-patches 10 (cl-function
-                        (lambda (&key data &allow-other-keys)
-                          (progn
-                            (setq choices ())
-                            (seq-do
-                             (lambda (e)
+                               (lambda (&key data &allow-other-keys)
                                  (progn
-                                    (setq patch_id
-                                          (assoc-default 'patch_id e))
-                                    (setq description
-                                          (assoc-default 'description e))
-                                    (setq number
-                                          (assoc-default 'patch_number e))
-                                    (setq project
-                                          (assoc-default 'project_id e))
-                                    (setq status
-                                          (assoc-default 'status e))
-                                    (setq choices
-                                          (append choices
-                                                  (list
-                                                   (cons
-                                                    (concat project " - " (number-to-string number) " - "  description " - "  status)
-                                                    patch_id)
-                                                   )
-                                                  )
-                                          )
+                                   (setq choices ())
+                                   (seq-do
+                                    (lambda (e)
+                                      (progn
+                                        (setq patch_id
+                                              (assoc-default 'patch_id e))
+                                        (setq description
+                                              (assoc-default 'description e))
+                                        (setq number
+                                              (assoc-default 'patch_number e))
+                                        (setq project
+                                              (assoc-default 'project_id e))
+                                        (setq status
+                                              (assoc-default 'status e))
+                                        (setq choices
+                                              (append choices
+                                                      (list
+                                                       (cons
+                                                        (concat project " - " (number-to-string number) " - "  description " - "  status)
+                                                        patch_id)
+                                                       )
+                                                      )
+                                              )
+                                        )
+                                      )
+                                    data
                                     )
+                                   ;; TODO this gives issues if the user exits
+                                   (setq choice (completing-read
+                                                 "Evergreen patch: " choices nil t "")
+                                         )
+                                   (setq id (assoc-default choice choices))
+                                   (browse-url (concat "https://spruce.mongodb.com/version/" id )))
+                                 )
                                )
-                             data
-                             )
-                            ;; TODO this gives issues if the user exits
-                            (setq choice (completing-read
-                                          "Evergreen patch: " choices nil t "")
-                                  )
-                            (setq id (assoc-default choice choices))
-                            (browse-url (concat "https://spruce.mongodb.com/version/" id )))
-                            )
-                          )
-                        )
-                )
+                           )
   )
+
 
 
 

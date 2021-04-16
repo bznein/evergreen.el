@@ -4,12 +4,19 @@
 
 (require 'evergreen_auth)
 
+(defun api_user ()
+  (getenv "EVG_API_USER")
+  )
+
+(defun api_key ()
+  (getenv "EVG_API_KEY")
+  )
 
 (defun mdb/evg-get-header ()
   (mdb/set-credentials)
   (list
-   (cons "Api-User" (getenv "EVG_API_USER"))
-   (cons "Api-Key" (getenv "EVG_API_KEY"))
+   (cons "Api-User" (api_user))
+   (cons "Api-Key" (api_key))
    )
   )
 
@@ -98,7 +105,7 @@
 (defun mdb/evg-get-all-patches (limit success-callback)
   (setq patch_id "")
   (request
-    (concat "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=" (number-to-string limit))
+    (concat "https://evergreen.mongodb.com/rest/v2/users/" (api_user) "/patches?limit=" (number-to-string limit))
     :headers (mdb/evg-get-header)
     :parser 'json-read
     :success success-callback
@@ -109,7 +116,7 @@
 
 (defun mdb/bump-priority (priority)
     (request
-      (concat "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=1")
+      (concat "https://evergreen.mongodb.com/rest/v2/users/" (api_user) "/patches?limit=1")
       :headers (mdb/evg-get-header)
       :parser 'json-read
       :sync 't
