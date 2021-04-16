@@ -249,6 +249,6 @@
   (setq patch (get-text-property (point) 'evg-patch))
 
   (if patch
-    (shell-command (message (concat "open https://spruce.mongodb.com/version/" (alist-get 'patch_id patch) )))
+      (browse-url (concat "https://spruce.mongodb.com/version/" (alist-get 'patch_id patch) ))
     )
   )
