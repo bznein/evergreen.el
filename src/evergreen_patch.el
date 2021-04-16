@@ -33,6 +33,8 @@
            (newline)
            (insert-button "RAW" 'action (lambda (_) (browse-url raw_url)))
            (newline)
+           (insert-button "See in new buffer" 'action (lambda (_) (mdb/evg-show-diff raw_url (concat "Patch " (alist-get 'patch_id patch) " - diff") 't)))
+           (newline)
            (newline)
            (insert "Files changed:")
            (setq file_top_point (point))
@@ -145,7 +147,7 @@
 
 
 
-(defun mdb/evg-show-diff (raw_url file_name)
+(defun mdb/evg-show-diff (raw_url file_name &optional show_everything)
   (interactive)
   (setq buffer_name file_name)
   (switch-to-buffer (get-buffer-create buffer_name))
@@ -161,7 +163,7 @@
        (setq splitted_string (split-string file "\n"))
        (seq-do
         (lambda (line)
-          (if found
+          (if (or found show_everything)
                  (progn
                    (if (string-prefix-p "diff --git a/" line)
                        (setq found nil)
