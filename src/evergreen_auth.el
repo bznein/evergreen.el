@@ -4,23 +4,20 @@
 
 (defun mdb/read-credentials-from-file ()
   (interactive)
-  ;; TODO make file path customizable
-  (setq credentials (json-read-file "~/.evergreen_credentials"))
-  (if (or
-       (not (assoc 'EVG_API_KEY credentials))
-       (not (assoc 'EVG_API_USER credentials))
-       )
-      (progn
-        (message "Can't find either EVG_API_KEY or EVG_API_USER entries in ~/.evergreen_credentials")
-        nil
-        )
-    (progn
-      (setenv "EVG_API_KEY"
-              (assoc-default 'EVG_API_KEY credentials))
-      (setenv "EVG_API_USER" (assoc-default 'EVG_API_USER credentials))
-      )
+  (with-temp-buffer
+    (insert-file-contents "~/.evergreen.yml")
+    (goto-char (point-min))
+    (if (search-forward-regexp "api_key: \"?\\([a-z0-9]*\\)\"?$")
+        (setenv "EVG_API_KEY" (match-string 1))
+      (error "api key not included in ~/.evergreen.yml"))
+    (goto-char (point-min))
+    (if (search-forward-regexp "user: \"?\\(.*\\)\"?$")
+        (setenv "EVG_API_USER" (match-string 1))
+      (error "api user not included in ~/.evergreen.yml"))
     )
   )
+
+
 
 (defun mdb/set-credentials ()
   (interactive)
