@@ -27,7 +27,7 @@
                                           (append choices
                                                   (list
                                                    (cons
-                                                    (concatenate 'string project " - " (number-to-string number) " - "  description " - "  status)
+                                                    (concat project " - " (number-to-string number) " - "  description " - "  status)
                                                     patch_id)
                                                    )
                                                   )
