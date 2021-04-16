@@ -2,11 +2,11 @@
 (provide 'evergreen_parser)
 
 (defun mdb/evg-get-config-file ()
-  (concatenate 'string (replace-regexp-in-string "\n\\'" "" (mdb/get-current-repo-root-path)) "/.evergreen.yml")
+  (concat (replace-regexp-in-string "\n\\'" "" (mdb/get-current-repo-root-path)) "/.evergreen.yml")
   )
 
 (defun mdb/evg-get-evergreen-dict ()
-  (setq json_evg (shell-command-to-string (concatenate 'string "yq eval -j " (mdb/evg-get-config-file))))
+  (setq json_evg (shell-command-to-string (concat "yq eval -j " (mdb/evg-get-config-file))))
   (json-read-from-string json_evg)
   )
 
@@ -46,8 +46,8 @@
          (s-suffix? ".yml" buffer-file-name)
         )
        )
-      (message  (shell-command-to-string(concatenate 'string "evergreen validate --path " (read-file-name "Evergreen file"))))
-    (message (shell-command-to-string(concatenate 'string "evergreen validate --path " buffer-file-name )))
+      (message  (shell-command-to-string(concat "evergreen validate --path " (read-file-name "Evergreen file"))))
+    (message (shell-command-to-string(concat "evergreen validate --path " buffer-file-name )))
     )
   )
 

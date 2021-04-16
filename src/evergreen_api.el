@@ -15,7 +15,7 @@
                   )
           )
     (request
-      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/versions/" version_id)
+      (concat "https://evergreen.mongodb.com/rest/v2/versions/" version_id)
       :headers header
       :parser 'json-read
       :success success-callback
@@ -35,7 +35,7 @@
                   )
           )
     (request
-      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/builds/" build_variant "/tasks")
+      (concat "https://evergreen.mongodb.com/rest/v2/builds/" build_variant "/tasks")
       :headers header
       :parser 'json-read
       :success success-callback
@@ -56,7 +56,7 @@
                   )
           )
     (request
-      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/tasks/" task "?fetch_all_executions")
+      (concat "https://evergreen.mongodb.com/rest/v2/tasks/" task "?fetch_all_executions")
                    :headers header
                    :parser 'json-read
                    :success (cl-function (lambda (&key data &allow-other-keys) (funcall handler_call data)))
@@ -74,7 +74,7 @@
                 )
         )
   (setq handler_call handler)
-  (setq url (concatenate 'string "https://evergreen.mongodb.com/task_log_raw/" task_name "/0?type=T&text=true"))
+  (setq url (concat "https://evergreen.mongodb.com/task_log_raw/" task_name "/0?type=T&text=true"))
   (message url)
   (request
     url
@@ -155,7 +155,7 @@
                   )
           )
     (request
-      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=" (number-to-string limit))
+      (concat "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=" (number-to-string limit))
       :headers header
       :parser 'json-read
       :success success-callback
@@ -175,7 +175,7 @@
                   )
           )
     (request
-      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=1")
+      (concat "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=1")
       :headers header
       :parser 'json-read
       :sync 't
@@ -188,7 +188,7 @@
                                          )
                           )
                     (request
-                      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/patches/" patch_id)
+                      (concat "https://evergreen.mongodb.com/rest/v2/patches/" patch_id)
                       :type "PATCH"
                       :data (json-encode
                              (list

@@ -37,11 +37,11 @@
       (setq description (read-string "Description: "))
       (if
           (not (= (length description) 0))
-          (setq description_command (concatenate 'string " -d " description))
+          (setq description_command (concat " -d " description))
         )
       (setq priority (read-string "Priority: "))
       (shell-command
-       (concatenate 'string
+       (concat
                     "evergreen patch"
                     " -p " (replace-regexp-in-string "\n\\'" "" (mdb/get-current-repo))
                     " -t " (s-join " -t " tasks_for_command)
