@@ -1,3 +1,9 @@
+;;; -*- lexical-binding: t; -*-
+
+(provide 'evergreen_api)
+
+(require 'evergreen_auth)
+
 (defun mdb/evg-get-version (version_id success-callback)
   (mdb/set-credentials)
   (setq api_key (getenv "EVG_API_KEY"))
@@ -134,5 +140,67 @@
     :headers header
     :parser 'json-read
     :success (cl-function (lambda (&key data &allow-other-keys) (funcall handler_call data)))
+    )
+  )
+
+(defun mdb/evg-get-all-patches (limit success-callback)
+  (setq patch_id "")
+  (mdb/set-credentials)
+  (setq api_key (getenv "EVG_API_KEY"))
+  (setq api_user (getenv "EVG_API_USER"))
+  (progn
+    (setq header (list
+                  (cons "Api-User" api_user)
+                  (cons "Api-Key" api_key)
+                  )
+          )
+    (request
+      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=" (number-to-string limit))
+      :headers header
+      :parser 'json-read
+      :success success-callback
+      )
+    )
+  )
+
+
+(defun mdb/bump-priority (priority)
+  (mdb/set-credentials)
+  (setq api_key (getenv "EVG_API_KEY"))
+  (setq api_user (getenv "EVG_API_USER"))
+  (progn
+    (setq header (list
+                  (cons "Api-User" api_user)
+                  (cons "Api-Key" api_key)
+                  )
+          )
+    (request
+      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/users/" api_user "/patches?limit=1")
+      :headers header
+      :parser 'json-read
+      :sync 't
+      :success (cl-function
+                (lambda (&key data &allow-other-keys)
+                  (progn
+                    (setq patch_id
+                          (assoc-default 'patch_id
+                                         (svref data 0)
+                                         )
+                          )
+                    (request
+                      (concatenate 'string "https://evergreen.mongodb.com/rest/v2/patches/" patch_id)
+                      :type "PATCH"
+                      :data (json-encode
+                             (list
+                              (cons "priority" (string-to-number priority))
+                              )
+                             )
+                      :headers header
+                      :parser 'json-read
+                      )
+                    )
+                  )
+                )
+      )
     )
   )

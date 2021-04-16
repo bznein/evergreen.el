@@ -1,3 +1,7 @@
+;;; -*- lexical-binding: t; -*-
+
+(provide 'evergreen_auth)
+
 (defun mdb/read-credentials-from-file ()
   (interactive)
   ;; TODO make file path customizable
@@ -11,7 +15,8 @@
         nil
         )
     (progn
-      (setenv "EVG_API_KEY" (assoc-default 'EVG_API_KEY credentials))
+      (setenv "EVG_API_KEY"
+              (assoc-default 'EVG_API_KEY credentials))
       (setenv "EVG_API_USER" (assoc-default 'EVG_API_USER credentials))
       )
     )
