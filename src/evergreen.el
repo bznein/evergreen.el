@@ -2,6 +2,7 @@
 
 (provide 'evergreen)
 
+(require 'request)
 (require 'ansi-color)
 
 (defvar mdb-evg-mode-map nil "Keymap for evg-status page")
